@@ -16,6 +16,21 @@ service 'mysqld' do
   action :start
 end
 
+# deleting test database
 execute 'delete-test-db' do
   command 'mysql -uroot -e "show databases" | grep -v Database | grep -v mysql| grep -v information_schema | gawk \'{print "drop database " $1 ";"}\' | mysql -uroot > /dev/null'
 end
+
+# creating stage_db
+execute 'create-stage_db' do
+  command 'mysql -uroot -e "create database stage_db"'
+end
+
+# creating prod db
+execute 'create-prod_db' do
+  command 'mysql -uroot -e "create database prod_db"'
+end
+
+# creating user service_stage
+
+# creating user service_prod
