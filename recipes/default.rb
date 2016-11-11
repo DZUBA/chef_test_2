@@ -32,5 +32,13 @@ execute 'create-prod_db' do
 end
 
 # creating user service_stage
+execute 'create-user-service_stage' do
+  command 'mysql -uroot -e "create user \'service_stage\'@\'%\' IDENTIFIED BY \'password\'"'
+  command 'mysql -uroot -e "grant select,insert,update,delete,create,drop on stage_db.* to \'service_stage\'@\'%\'"'
+end
 
 # creating user service_prod
+execute 'create-user-service_prod' do
+  command 'mysql -uroot -e "create user \'service_prod\'@\'%\' IDENTIFIED BY \'password\'"'
+  command 'mysql -uroot -e "grant select,insert,update,delete,create,drop on prod_db.* to \'service_prod\'@\'%\'"'
+end
