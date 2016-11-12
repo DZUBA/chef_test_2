@@ -8,6 +8,6 @@
 default['chef_task_2']['db_prod'] = 'prod_db'
 default['chef_task_2']['db_stage'] = 'stage_db'
 
-# Database users
+# Users for databases
 default['chef_task_2']['user_prod'] = 'service_prod'
 default['chef_task_2']['user_stage'] = 'service_stage'
