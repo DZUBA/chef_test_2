@@ -5,12 +5,11 @@
 # Copyright (c) 2016 The Authors, All Rights Reserved.
 
 include_recipe 'yum::default'
-mysql_bag = search(:admins, "id:mysql").first
+mysql_bag = search(:admins, 'id:mysql').first
 
 # MySQL creds
 mysql_user = mysql_bag['user']
 mysql_passwd = mysql_bag['pass']
-
 
 # install mysql
 package 'mysql-server' do
@@ -29,7 +28,7 @@ end
 
 # deleting test database
 execute 'delete-test-db' do
-  #sensitive true
+  sensitive true
   command "mysql -u#{mysql_user} -p#{mysql_passwd} -e 'show databases' | grep -v Database | grep -v mysql| grep -v information_schema | gawk '{print \"drop database \" $1 \";\"}' | mysql -p#{mysql_passwd}"
 end
 
