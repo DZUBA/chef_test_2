@@ -1,0 +1,5 @@
+{
+  "id": "prod",
+  "db_user": "service_prod",
+  "db_name": "prod_db"
+}

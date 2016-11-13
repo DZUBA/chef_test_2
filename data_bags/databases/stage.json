@@ -1,0 +1,5 @@
+{
+  "id": "stage",
+  "db_user": "service_stage",
+  "db_name": "stage_db"
+}
