@@ -1,6 +1,6 @@
 # chef_task_2
 
-TODO: Enter the cookbook description here.
+TODO: Cookbook for deployment VM with MySQL server via Vagrant.
 
 Q: What is foodcritic?
 
