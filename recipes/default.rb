@@ -17,11 +17,6 @@ stage_db = stage_bag['db_name']
 prod_user = prod_bag['db_user']
 prod_db = prod_bag['db_name']
 
-#execute 'check_mysql' do
-#  not_if "yum list installed | grep mysql-server"
-#  
-#end
-
 # install mysql
 package 'mysql-server' do
   not_if "yum list installed | grep mysql-server"
@@ -33,6 +28,8 @@ package 'mysql-server' do
   notifies :run, 'execute[create-prod_db]'
   notifies :run, 'execute[create-user-prod]'
   notifies :run, 'execute[create-user-stage]'
+#  notifies :run, 'execute[prod_import]', :delayed
+#  notifies :run, 'execute[stage_import]', :delayed
 end
 
 # start mysql server
@@ -57,28 +54,49 @@ end
 execute 'create-stage_db' do
   action :nothing
   sensitive true
-  command "mysql -u#{mysql_user} -p#{mysql_passwd} -e 'create database #{node['chef_task_2']['db_stage']}'"
+  command "mysql -u#{mysql_user} -p#{mysql_passwd} -e 'create database #{stage_db}'"
 end
 
 # creating prod db
 execute 'create-prod_db' do
   action :nothing
   sensitive true
-  command "mysql -u#{mysql_user} -p#{mysql_passwd} -e 'create database #{node['chef_task_2']['db_prod']}'"
+  command "mysql -u#{mysql_user} -p#{mysql_passwd} -e 'create database #{prod_db}'"
 end
 
 # creating user service_stage
 execute 'create-user-stage' do
   action :nothing
   sensitive true
-  command "mysql -u#{mysql_user} -p#{mysql_passwd} -e \"create user '#{node['chef_task_2']['user_stage']}'@'%' IDENTIFIED BY 'password'\" "
-  command "mysql -u#{mysql_user} -p#{mysql_passwd} -e \"grant select,insert,update,delete,create,drop on #{node['chef_task_2']['db_stage']}.* to '#{node['chef_task_2']['user_stage']}'@'%'\" "
+  command "mysql -u#{mysql_user} -p#{mysql_passwd} -e \"create user '#{stage_user}'@'%' IDENTIFIED BY 'password'\" "
+  command "mysql -u#{mysql_user} -p#{mysql_passwd} -e \"grant select,insert,update,delete,create,drop on #{stage_db}.* to '#{stage_user}'@'%'\" "
 end
 
 # creating user service_prod
 execute 'create-user-prod' do
   action :nothing
   sensitive true
-  command "mysql -u#{mysql_user} -p#{mysql_passwd} -e \"create user '#{node['chef_task_2']['user_prod']}'@'%' IDENTIFIED BY 'password'\" "
-  command "mysql -u#{mysql_user} -p#{mysql_passwd} -e \"grant select,insert,update,delete,create,drop on #{node['chef_task_2']['db_prod']}.* to '#{node['chef_task_2']['user_prod']}'@'%'\" "
+  command "mysql -u#{mysql_user} -p#{mysql_passwd} -e \"create user '#{prod_user}'@'%' IDENTIFIED BY 'password'\" "
+  command "mysql -u#{mysql_user} -p#{mysql_passwd} -e \"grant select,insert,update,delete,create,drop on #{prod_db}.* to '#{prod_user}'@'%'\" "
+end
+
+# importing stage_db schema
+execute 'stage_import' do
+  sensitive true
+  command "mysql -p#{mysql_passwd} -u#{mysql_user} -D#{stage_db} < /tmp/schema.sql"
+  action :nothing
+end  
+
+# importing prod_db schema
+execute 'prod_import' do
+  sensitive true
+  command "mysql -p#{mysql_passwd} -u#{mysql_user} -D#{prod_db} < /tmp/schema.sql"
+  action :nothing
+end
+
+# import schema file
+cookbook_file '/tmp/schema.sql' do
+  source 'schema.sql'
+  notifies :run, 'execute[stage_import]', :delayed
+  notifies :run, 'execute[prod_import]', :delayed
 end
