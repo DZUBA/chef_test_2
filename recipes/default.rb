@@ -6,9 +6,7 @@
 
 include_recipe 'yum::default'
 
-admins = data_bag('admins')
-databases = data_bag('databases')
-
+# data bags init
 mysql_bag = data_bag_item('admins', 'mysql')
 stage_bag = data_bag_item('databases', 'stage')
 prod_bag = data_bag_item('databases', 'prod')
