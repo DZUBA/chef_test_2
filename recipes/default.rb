@@ -19,7 +19,7 @@ prod_db = prod_bag['db_name']
 
 # install mysql
 package 'mysql-server' do
-  not_if "yum list installed | grep mysql-server"
+  not_if 'yum list installed | grep mysql-server'
   action :install
   notifies :start, 'service[mysqld]', :immediately
   notifies :run, 'execute[mysql_root_pass]'
@@ -28,8 +28,6 @@ package 'mysql-server' do
   notifies :run, 'execute[create-prod_db]'
   notifies :run, 'execute[create-user-prod]'
   notifies :run, 'execute[create-user-stage]'
-#  notifies :run, 'execute[prod_import]', :delayed
-#  notifies :run, 'execute[stage_import]', :delayed
 end
 
 # start mysql server
@@ -85,7 +83,7 @@ execute 'stage_import' do
   sensitive true
   command "mysql -p#{mysql_passwd} -u#{mysql_user} -D#{stage_db} < /tmp/schema.sql"
   action :nothing
-end  
+end
 
 # importing prod_db schema
 execute 'prod_import' do
