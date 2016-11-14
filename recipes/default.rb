@@ -5,9 +5,13 @@
 # Copyright (c) 2016 The Authors, All Rights Reserved.
 
 include_recipe 'yum::default'
-mysql_bag = search(:admins, 'id:mysql').first
-stage_bag = search(:databases, 'id:stage').first
-prod_bag = search(:databases, 'id:prod').first
+
+admins = data_bag('admins')
+databases = data_bag('databases')
+
+mysql_bag = data_bag_item('admins', 'mysql')
+stage_bag = data_bag_item('databases', 'stage')
+prod_bag = data_bag_item('databases', 'prod')
 
 # MySQL creds
 mysql_user = mysql_bag['user']
